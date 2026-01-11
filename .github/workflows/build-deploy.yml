@@ -41,12 +41,7 @@ jobs:
           host: ${{ vars.AWW_HOST }}
           username: ${{ vars.AWW_USERNAME }}
           password: ${{ secrets.AWW_PASSWORD }}
-          source: |
-            aww-frontend/.next
-            aww-frontend/public
-            aww-frontend/package.json
-            aww-frontend/yarn.lock
-            aww-frontend/next.config.js
+          source: "aww-frontend/.next, aww-frontend/public, aww-frontend/package.json, aww-frontend/yarn.lock, aww-frontend/next.config.js"
           target: ".aww/aww-frontend/"
           strip_components: 0
 
@@ -99,14 +94,7 @@ jobs:
           host: ${{ vars.AWW_HOST }}
           username: ${{ vars.AWW_USERNAME }}
           password: ${{ secrets.AWW_PASSWORD }}
-          source: |
-            aww-cms/build
-            aww-cms/package.json
-            aww-cms/yarn.lock
-            aww-cms/public
-            aww-cms/database
-            aww-cms/config
-            ecosystem.config.js
+          source: "aww-cms/build, aww-cms/package.json, aww-cms/yarn.lock, aww-cms/public, aww-cms/database, aww-cms/config, ecosystem.config.js"
           target: ".aww/aww-cms/"
           strip_components: 0
 
