@@ -7,7 +7,7 @@ module.exports = {
             env_production: {
                 NODE_ENV: "production",
                 HOST: "${HOST}",
-                PORT: "${PORT_CMS}",
+                PORT: "${PORT}",
                 APP_KEYS: "${APP_KEYS}",
                 API_TOKEN_SALT: "${API_TOKEN_SALT}",
                 ADMIN_JWT_SECRET: "${ADMIN_JWT_SECRET}",
