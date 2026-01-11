@@ -32,8 +32,7 @@ jobs:
           NEXT_PUBLIC_STRAPI_BASE_URL: ${{ vars.NEXT_PUBLIC_STRAPI_BASE_URL }}
         run: |
           cd aww-frontend
-          echo "NEXT_PUBLIC_STRAPI_BASE_URL is: $NEXT_PUBLIC_STRAPI_BASE_URL"
-          yarn install --frozen-lockfile
+          yarn install
           yarn build
 
       - name: Deploy Frontend via SCP
@@ -82,9 +81,12 @@ jobs:
           key: yarn-strapi-${{ hashFiles('aww-cms/yarn.lock') }}
 
       - name: Build Strapi
+        env:
+          HOST: ${{ vars.HOST }}
+          PORT: ${{ vars.PORT }}
         run: |
           cd aww-cms
-          yarn install --frozen-lockfile
+          yarn install
           yarn build
       - name: Create Ecosystem Config File
         env:
@@ -112,7 +114,7 @@ jobs:
           host: ${{ vars.AWW_HOST }}
           username: ${{ vars.AWW_USERNAME }}
           password: ${{ secrets.AWW_PASSWORD }}
-          source: "aww-cms/build, aww-cms/package.json, aww-cms/yarn.lock, aww-cms/public, aww-cms/database, aww-cms/config, ecosystem.config.js"
+          source: "aww-cms/build, aww-cms/package.json, aww-cms/yarn.lock, aww-cms/public, aww-cms/database, aww-cms/config, aww-cms/favicon.ico ecosystem.config.js"
           target: ".build-staging/"
           strip_components: 0
 
