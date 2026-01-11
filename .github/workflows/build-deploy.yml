@@ -52,7 +52,7 @@ jobs:
           username: ${{ vars.AWW_USERNAME }}
           password: ${{ secrets.AWW_PASSWORD }}
           script: |
-            rsync -a --delete ~/.aww/aww-frontend/* ~/aww/aww-frontend/
+            rsync -a --delete ~/.aww/aww-frontend/. ~/aww/aww-frontend/
             cd ~/aww/aww-frontend
             yarn install --frozen-lockfile
 
@@ -105,7 +105,7 @@ jobs:
           password: ${{ secrets.AWW_PASSWORD }}
           script: |
             rsync -a --delete ~/.aww/ecosystem.config.js ~/aww/ecosystem.config.js
-            rsync -a --delete ~/.aww/aww-cms/* ~/aww/aww-cms/
+            rsync -a --delete ~/.aww/aww-cms/. ~/aww/aww-cms/
             cd ~/aww/aww-cms
             yarn install --frozen-lockfile
             pm2 start ecosystem.config.js --env production
