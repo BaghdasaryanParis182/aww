@@ -14,12 +14,16 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 18
-          cache: 'yarn'
       - name: Enable Corepack (Yarn)
         run: |
           corepack enable
           corepack prepare yarn@stable --activate
           yarn --version
+      - name: Cache Yarn
+        uses: actions/cache@v4
+        with:
+          path: ./node_modules
+          key: yarn-${{ hashFiles('yarn.lock') }}
       - name: Install dependencies
         run: yarn install --frozen-lockfile
       - name: Lint check
