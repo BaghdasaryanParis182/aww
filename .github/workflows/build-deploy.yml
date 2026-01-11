@@ -42,7 +42,7 @@ jobs:
           username: ${{ vars.AWW_USERNAME }}
           password: ${{ secrets.AWW_PASSWORD }}
           source: "aww-frontend/.next, aww-frontend/public, aww-frontend/package.json, aww-frontend/yarn.lock, aww-frontend/next.config.js"
-          target: ".aww/aww-frontend/"
+          target: ".build-staging/aww-frontend/"
           strip_components: 0
 
       - name: Restart Frontend (PM2)
@@ -52,10 +52,9 @@ jobs:
           username: ${{ vars.AWW_USERNAME }}
           password: ${{ secrets.AWW_PASSWORD }}
           script: |
-            rsync -a --delete ~/.aww/aww-frontend/ ~/aww/
+            rsync -a --delete ~/.build-staging/aww-frontend/ ~/aww/
             cd ~/aww/aww-frontend
             yarn install --frozen-lockfile
-
 
   strapi:
     needs: frontend
@@ -86,7 +85,26 @@ jobs:
           cd aww-cms
           yarn install --frozen-lockfile
           yarn build
-
+      - name: Create Ecosystem Config File
+        env:
+          NODE_ENV: production
+          HOST: ${{ vars.HOST }}
+          PORT: ${{ vars.PORT }}
+          APP_KEYS: ${{ secrets.APP_KEYS }}
+          API_TOKEN_SALT: ${{ secrets.API_TOKEN_SALT }}
+          ADMIN_JWT_SECRET: ${{ secrets.ADMIN_JWT_SECRET }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          DATABASE_HOST: ${{ vars.DATABASE_HOST }}
+          DATABASE_PORT: ${{ vars.DATABASE_PORT }}
+          DATABASE_NAME: ${{ vars.DATABASE_NAME }}
+          DATABASE_USERNAME: ${{ vars.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_SCHEMA: ${{ vars.DATABASE_SCHEMA }}
+          NEXT_PORT: ${{ vars.NEXT_PORT }}
+          STRAPI_ADMIN_BACKEND_URL: ${{ secrets.STRAPI_ADMIN_BACKEND_URL }}
+          COURIER_TOKEN: ${{ secrets.COURIER_TOKEN }}
+        run: |
+          envsubst <  template.ecosystem.config.js > ecosystem.config.js
       - name: Deploy Strapi via SCP
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -94,7 +112,7 @@ jobs:
           username: ${{ vars.AWW_USERNAME }}
           password: ${{ secrets.AWW_PASSWORD }}
           source: "aww-cms/build, aww-cms/package.json, aww-cms/yarn.lock, aww-cms/public, aww-cms/database, aww-cms/config, ecosystem.config.js"
-          target: ".aww/aww-cms/"
+          target: ".build-staging/aww-cms/"
           strip_components: 0
 
       - name: Restart Strapi (PM2)
@@ -104,8 +122,8 @@ jobs:
           username: ${{ vars.AWW_USERNAME }}
           password: ${{ secrets.AWW_PASSWORD }}
           script: |
-            rsync -a --delete ~/.aww/ecosystem.config.js ~/aww/ecosystem.config.js
-            rsync -a --delete ~/.aww/aww-cms/ ~/aww/
+            rsync -a --delete ~/.build-staging/ecosystem.config.js ~/aww/ecosystem.config.js
+            rsync -a --delete ~/.build-staging/aww-cms/ ~/aww/
             cd ~/aww/aww-cms
             yarn install --frozen-lockfile
             cd ~/aww
