@@ -1,8 +1,8 @@
 module.exports = {
     apps : [{
             name: "aww-cms",
-            script: "npm",
-            args: "start",
+            script: "yarn",
+            args: "start:prod",
             cwd: './aww-cms/',
             env_production: {
                 NODE_ENV: "production",
@@ -22,7 +22,7 @@ module.exports = {
         },
         {
             name: "aww-frontend",
-            script: "npm",
+            script: "yarn",
             args: "start",
             cwd: './aww-frontend/',
             env_production: {
