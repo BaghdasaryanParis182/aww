@@ -23,7 +23,7 @@ jobs:
           key: yarn-${{ hashFiles('yarn.lock') }}
       - name: Build Next App
         env:
-          NEXT_PUBLIC_STRAPI_BASE_URL: ${{ secrets.NEXT_PUBLIC_STRAPI_BASE_URL }}
+          NEXT_PUBLIC_STRAPI_BASE_URL: ${{ vars.NEXT_PUBLIC_STRAPI_BASE_URL }}
         run: | 
           cd ./aww-frontend
           yarn 
@@ -33,7 +33,7 @@ jobs:
           cd ./aww-cms
           yarn 
           yarn build
-      - name: create-ecosystem-config-file
+      - name: Create Ecosystem Config File
         env:
           NODE_ENV: production
           HOST: ${{ vars.HOST }}
