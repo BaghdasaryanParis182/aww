@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: "Montserrat arm", serif;
+  }
+}
+
+@font-face {
+  font-family: "Montserrat arm";
+  src: url("/next-assets/fonts/Montserratarm-Regular.otf");
+  font-weight: normal;
+  font-style: normal;
+}
+
+.react-multi-carousel-dot-list {
+  position: unset !important;
+}
+
+.carousel .control-next {
+  height: 70px !important;
+  top: 50% !important;
+  background-color: black !important;
+  width: 70px !important;
+  border-radius: 50% !important;
+  margin-right: 10px !important;
+}
+
+.carousel .control-prev {
+  height: 70px !important;
+  top: 50% !important;
+  background-color: black !important;
+  width: 70px !important;
+  border-radius: 50% !important;
+  margin-left: 10px !important;
+}
+
+.carousel-status {
+  display: none;
+}

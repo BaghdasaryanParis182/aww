@@ -1,0 +1,80 @@
+{
+  "kind": "collectionType",
+  "collectionName": "women",
+  "info": {
+    "singularName": "woman",
+    "pluralName": "women",
+    "displayName": "woman",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "first_name": {
+      "type": "string",
+      "required": true
+    },
+    "last_name": {
+      "type": "string",
+      "required": true
+    },
+    "avatar": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "birthday": {
+      "type": "date",
+      "required": false
+    },
+    "videos": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::video.video",
+      "mappedBy": "woman"
+    },
+    "categories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::category.category",
+      "inversedBy": "women"
+    },
+    "death_day": {
+      "type": "date"
+    },
+    "country": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "avatarSize": {
+      "type": "enumeration",
+      "enum": [
+        "S",
+        "M",
+        "L"
+      ],
+      "required": true
+    },
+    "images": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::image.image",
+      "mappedBy": "woman"
+    },
+    "women_stories": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::women-story.women-story"
+    }
+  }
+}

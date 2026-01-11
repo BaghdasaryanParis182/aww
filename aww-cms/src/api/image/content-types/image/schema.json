@@ -1,0 +1,47 @@
+{
+  "kind": "collectionType",
+  "collectionName": "images",
+  "info": {
+    "singularName": "image",
+    "pluralName": "images",
+    "displayName": "image",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "img": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "woman": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::woman.woman",
+      "inversedBy": "images"
+    },
+    "size": {
+      "type": "enumeration",
+      "enum": [
+        "M",
+        "S",
+        "L"
+      ],
+      "default": "S",
+      "required": true
+    }
+  }
+}

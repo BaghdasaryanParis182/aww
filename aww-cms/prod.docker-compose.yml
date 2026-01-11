@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespw
+      POSTGRES_DB: aww
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - 6432:5432
+
+volumes:
+  pgdata:
+    driver: local
+    driver_opts:
+      type: none
+      device: "/mnt/data/armenian-wonder-women/pgdata"
+      o: bind

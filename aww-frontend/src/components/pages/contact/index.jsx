@@ -1,0 +1,216 @@
+import * as Yup from 'yup'
+import Image from 'next/image'
+import { useFormik } from 'formik'
+import React, { useState } from 'react'
+import Input from '../../shared/Input'
+import Button from '../../shared/Button'
+import Loader from '../../shared/Loader'
+import styles from './styles/contact.module.css'
+import ErrorMessage from '../../shared/ErrorMessage'
+import SuccessMessage from '../../shared/SuccessMessage'
+import { handleRequest } from '../../../../services/frontend/request'
+import Link from 'next/link'
+
+const ContactUs = () => {
+  const [requestState, setRequestState] = useState('')
+  const [loader, setLoader] = useState(false)
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      email: '',
+      subject: '',
+      message: '',
+    },
+    validationSchema: Yup.object({
+      name: Yup.string().required('Պարտադիր լրացման դաշտ'),
+      email: Yup.string()
+        .email('Չի համապատասխանում ձևաչափին')
+        .required('Պարտադիր լրացման դաշտ'),
+      subject: Yup.string().required('Պարտադիր լրացման դաշտ'),
+      message: Yup.string().required('Պարտադիր լրացման դաշտ'),
+    }),
+    onSubmit: (values) => sendMessage(values),
+  })
+
+  const sendMessage = async (values) => {
+    const body = document.querySelector('body')
+    body.style.overflow = 'hidden'
+    setLoader(true)
+    values.formSubject = 'Կապ մեզ հետ'
+    await handleRequest('contact', values)
+      .then(() => {
+        setRequestState('success')
+        formik.handleReset()
+      })
+      .catch(() => {
+        setRequestState('error')
+      })
+      .finally(() => {
+        setLoader(false)
+      })
+  }
+
+  const onCancelClick = () => {
+    const body = document.querySelector('body')
+    setRequestState('')
+    body.style.overflow = 'auto'
+  }
+
+  return (
+    <>
+      <div
+        className={`container mx-auto grid grid-cols-4 mb-20 mt-10  lg:grid-cols-12 lg:gap-x-6 lg:mt-54 lg:mb-33`}
+      >
+        <div className={`col-start-1 col-end-5  lg:col-end-6`}>
+          <h1 className={`text-violet-950 text-4xl lg:text-56`}>Կապ մեզ հետ</h1>
+
+          <div className={`mt-14  lg:mt-16 `}>
+            <div
+              className={`flex items-center border-b border-solid border-yellow-450 pb-6 mb-6`}
+            >
+              <Image
+                src={'/img/Letter.svg'}
+                alt={'Letter'}
+                width={26}
+                height={21}
+              />
+              <p
+                className={`font-semibold sm:text-lg text-violet-950 sm:ml-5 ml-2`}
+              >
+                femalepowerhousearm@gmail.com
+              </p>
+            </div>
+
+            <div className={`flex items-baseline`}>
+              <span className={`mr-8`}>
+                <Link href={'https://www.facebook.com/armenianwonderwomen'}>
+                  <a target="_blank">
+                    <Image
+                      src={'/img/facebook-purple.svg'}
+                      alt={'Facebook'}
+                      width={13}
+                      height={24}
+                    />
+                  </a>
+                </Link>
+              </span>
+
+              <span className={`mr-6`}>
+                <Link
+                  href={
+                    'https://instagram.com/armenianwonderwomen?igshid=YmMyMTA2M2Y='
+                  }
+                >
+                  <a target="_blank">
+                    <Image
+                      src={'/img/instagram-purple.svg'}
+                      alt={'Instagram'}
+                      width={24}
+                      height={24}
+                    />
+                  </a>
+                </Link>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div
+          className={`col-span-4 mt-10 lg:col-start-7  lg:mt-0 lg:col-span-6`}
+        >
+          <form onSubmit={formik.handleSubmit}>
+            <div className={`lg:flex lg:w-md`}>
+              <Input
+                labelClassname={`w-80 lg:w-67 lg:mr-6 block`}
+                inputClassName={`border h-15 mt-2 border-solid border-violent-950 focus:outline-0 py-3 pl-4 placeholder:text-gray-550 placeholder:text-base`}
+                spanClassName={`text-base text-violet-850`}
+                label={'Անուն'}
+                type={'text'}
+                placeholder={`Անուն`}
+                value={formik.values.name}
+                onchange={formik.handleChange}
+                id={'name'}
+                error={formik.errors.name}
+                onBlur={formik.handleBlur}
+                touched={formik.touched.name}
+              />
+              <Input
+                labelClassname={`w-80 mt-4 lg:w-67 block lg:mt-0`}
+                inputClassName={`border h-15 mt-2  border-solid border-violent-950 focus:outline-0 py-3 pl-4 placeholder:text-gray-550 placeholder:text-base`}
+                spanClassName={`text-base text-violet-850`}
+                label={'Էլ. հասցե'}
+                type={'email'}
+                placeholder={`Էլ. հասցե`}
+                value={formik.values.email}
+                onchange={formik.handleChange}
+                id={'email'}
+                error={formik.errors.email}
+                onBlur={formik.handleBlur}
+                touched={formik.touched.email}
+              />
+            </div>
+            <div>
+              <Input
+                labelClassname={` w-80 mt-4 block lg:w-md lg:mt-6`}
+                inputClassName={`border h-15 mt-2 border-solid border-violent-950 focus:outline-0 py-3 pl-4 placeholder:text-gray-550 placeholder:text-base`}
+                label={'Թեմա'}
+                type={'text'}
+                spanClassName={`text-base text-violet-850`}
+                placeholder={`Թեմա`}
+                value={formik.values.subject}
+                onchange={formik.handleChange}
+                id={'subject'}
+                error={formik.errors.subject}
+                onBlur={formik.handleBlur}
+                touched={formik.touched.subject}
+              />
+              <label className={`w-80 mt-4 block lg:mt-6 lg:w-570`}>
+                <span className={`text-base text-violet-850 block`}>
+                  Հաղորդագրություն
+                </span>
+                <textarea
+                  className={`w-full h-34 border border-solid border-violent-950 focus:outline-0 py-3 pl-4 placeholder:text-gray-550 mt-2 resize-none placeholder:text-base placeholder:text-gray-550 ${
+                    formik.errors.message && formik.touched.message
+                      ? 'border-red-400'
+                      : ''
+                  }`}
+                  placeholder={'Հաղորդագրություն'}
+                  value={formik.values.message}
+                  onChange={formik.handleChange}
+                  id={'message'}
+                  onBlur={formik.handleBlur}
+                ></textarea>
+                {formik.errors.message && formik.touched.message ? (
+                  <p className={`text-red-400`}>{formik.errors.message}</p>
+                ) : null}
+              </label>
+              <div
+                className={`flex justify-end mt-8 w-80 lg:w-full lg:mt-9 lg:block`}
+              >
+                <Button
+                  label={'Հաստատել'}
+                  className={`px-6 py-4 text-white text-center text-lg font-medium w-40 h-15.5  ${styles.submit_btn}`}
+                  type={'submit'}
+                />
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {loader ? <Loader /> : null}
+
+      {requestState === 'success' ? (
+        <SuccessMessage onClose={onCancelClick} />
+      ) : null}
+      {requestState === 'error' ? (
+        <ErrorMessage
+          onTryClick={() => sendMessage(formik.values)}
+          onCancelClick={() => onCancelClick()}
+        />
+      ) : null}
+    </>
+  )
+}
+
+export default ContactUs
