@@ -57,6 +57,16 @@ jobs:
           COURIER_TOKEN: ${{ secrets.COURIER_TOKEN }}
         run: |
           envsubst <  template.ecosystem.config.js > ecosystem.config.js
+      - name: checking
+        run: |
+          echo "=== Frontend ==="
+          ls -la aww-frontend
+          ls -la aww-frontend/.next
+          ls -la aww-frontend/public
+      
+          echo "=== CMS ==="
+          ls -la aww-cms
+          ls -la aww-cms/build
       - name: Deploy Frontend Via SCP
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -95,10 +105,10 @@ jobs:
           password: ${{ secrets.AWW_PASSWORD }}
           script: |
             rsync -a --delete ~/.aww/aww-cms/ ~/aww/aww-cms/
-            cd ./aww/aww-cms/
+            cd ~/aww/aww-cms
             yarn install --frozen-lockfile
             rsync -a --delete ~/.aww/ecosystem.config.js ~/aww/ecosystem.config.js
             rsync -a --delete ~/.aww/aww-frontend/ ~/aww/aww-frontend/
-            cd ./aww/aww-cms/
+            cd ~/aww/aww-cms/
             yarn install --frozen-lockfile
             pm2 start ecosystem.config.js --env production
