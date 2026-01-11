@@ -64,6 +64,7 @@ jobs:
 
 
   strapi:
+    needs: frontend
     runs-on: self-hosted
 
     steps:
