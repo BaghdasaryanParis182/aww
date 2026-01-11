@@ -101,7 +101,7 @@ jobs:
           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
           DATABASE_SCHEMA: ${{ vars.DATABASE_SCHEMA }}
           NEXT_PORT: ${{ vars.NEXT_PORT }}
-          STRAPI_ADMIN_BACKEND_URL: ${{ secrets.STRAPI_ADMIN_BACKEND_URL }}
+          STRAPI_ADMIN_BACKEND_URL: ${{ vars.STRAPI_ADMIN_BACKEND_URL }}
           COURIER_TOKEN: ${{ secrets.COURIER_TOKEN }}
         run: |
           envsubst <  template.ecosystem.config.js > ecosystem.config.js
@@ -127,4 +127,5 @@ jobs:
             cd ~/aww/aww-cms
             yarn install --frozen-lockfile
             cd ~/aww
-            pm2 start ecosystem.config.js --env production
+            pm2 reload ecosystem.config.js --update-env
+            pm2 reset all
