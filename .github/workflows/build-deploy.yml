@@ -16,11 +16,6 @@ jobs:
         with:
           node-version: 16
 
-      - name: Enable Corepack
-        run: |
-          corepack enable
-          corepack prepare yarn@stable --activate
-
       - name: Cache Frontend
         uses: actions/cache@v4
         with:
