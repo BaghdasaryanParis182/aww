@@ -6,7 +6,10 @@ on:
 jobs:
   frontend:
     runs-on: self-hosted
-
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./aww-frontend
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -20,7 +23,6 @@ jobs:
         env:
           NEXT_PUBLIC_STRAPI_BASE_URL: ${{ vars.NEXT_PUBLIC_STRAPI_BASE_URL }}
         run: |
-          cd aww-frontend
           npm i
           npm run build
 
@@ -30,7 +32,7 @@ jobs:
           host: ${{ vars.AWW_HOST }}
           username: ${{ vars.AWW_USERNAME }}
           password: ${{ secrets.AWW_PASSWORD }}
-          source: "aww-frontend/.next, aww-frontend/public, aww-frontend/package.json, aww-frontend/yarn.lock, aww-frontend/next.config.js"
+          source: ".next, public, package.json, yarn.lock, next.config.js"
           target: ".build-staging/"
           strip_components: 0
 
