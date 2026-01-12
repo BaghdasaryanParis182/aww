@@ -26,7 +26,7 @@ jobs:
         env:
           NEXT_PUBLIC_STRAPI_BASE_URL: ${{ vars.NEXT_PUBLIC_STRAPI_BASE_URL }}
         run: |
-          run: npm install -g yarn@1.22.20
+          npm install -g yarn@1.22.20
           cd aww-frontend
           yarn install
           yarn build
