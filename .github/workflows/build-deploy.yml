@@ -70,12 +70,6 @@ jobs:
           node-version: 16
           cache: "npm"
 
-      - name: Cache Strapi
-        uses: actions/cache@v4
-        with:
-          path: aww-cms/node_modules
-          key: yarn-strapi-${{ hashFiles('aww-cms/yarn.lock') }}
-
       - name: Build Strapi
         env:
           HOST: ${{ vars.HOST }}
