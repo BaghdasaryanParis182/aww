@@ -88,6 +88,11 @@ jobs:
           cd aww-cms
           yarn install
           yarn build
+      - name: Check Strapi build
+        run: |
+          ls -la aww-cms
+          ls -la aww-cms/build || echo "❌ build folder NOT FOUND"
+
       - name: Create Ecosystem Config File
         env:
           NODE_ENV: production
@@ -114,7 +119,7 @@ jobs:
           host: ${{ vars.AWW_HOST }}
           username: ${{ vars.AWW_USERNAME }}
           password: ${{ secrets.AWW_PASSWORD }}
-          source: "aww-cms/build, aww-cms/package.json, aww-cms/yarn.lock, aww-cms/public, aww-cms/database, aww-cms/config, aww-cms/favicon.ico ecosystem.config.js"
+          source: "aww-cms/build, aww-cms/package.json, aww-cms/yarn.lock, aww-cms/public, aww-cms/database, aww-cms/config, aww-cms/favicon.ico, ecosystem.config.js"
           target: ".build-staging/"
           strip_components: 0
 
@@ -130,5 +135,5 @@ jobs:
             cd ~/aww/aww-cms
             yarn install --frozen-lockfile
             cd ~/aww
-            pm2 reload ecosystem.config.js --update-env
+            pm2 reload ecosystem.config.js --update-env  --env production
             pm2 reset all
