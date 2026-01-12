@@ -15,20 +15,14 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 16
-
-      - name: Cache Frontend
-        uses: actions/cache@v4
-        with:
-          path: aww-frontend/node_modules
-          key: yarn-frontend-${{ hashFiles('aww-frontend/yarn.lock') }}
-
+          cache: "npm"
       - name: Build Next App
         env:
           NEXT_PUBLIC_STRAPI_BASE_URL: ${{ vars.NEXT_PUBLIC_STRAPI_BASE_URL }}
         run: |
           cd aww-frontend
-          yarn install
-          yarn build
+          npm i
+          npm run build
 
       - name: Deploy Frontend via SCP
         uses: appleboy/scp-action@v0.1.4
@@ -49,7 +43,7 @@ jobs:
           script: |
             rsync -a --delete ~/.build-staging/aww-frontend/ ~/aww/aww-frontend/
             cd ~/aww/aww-frontend
-            yarn install --frozen-lockfile
+            npm ci --omit=dev
 
   strapi:
     needs: frontend
