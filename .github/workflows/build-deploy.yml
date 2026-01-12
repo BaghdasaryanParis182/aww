@@ -6,24 +6,34 @@ on:
 jobs:
   frontend:
     runs-on: self-hosted
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./aww-frontend
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 16
-          cache: "yarn"
+          node-version: 18
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare yarn@stable --activate
+
+      - name: Cache Frontend
+        uses: actions/cache@v4
+        with:
+          path: aww-frontend/node_modules
+          key: yarn-frontend-${{ hashFiles('aww-frontend/yarn.lock') }}
+
       - name: Build Next App
         env:
           NEXT_PUBLIC_STRAPI_BASE_URL: ${{ vars.NEXT_PUBLIC_STRAPI_BASE_URL }}
         run: |
-          ls
-          yarn
+          cd aww-frontend
+          echo "NEXT_PUBLIC_STRAPI_BASE_URL is: $NEXT_PUBLIC_STRAPI_BASE_URL"
+          yarn install --frozen-lockfile
           yarn build
 
       - name: Deploy Frontend via SCP
@@ -32,7 +42,7 @@ jobs:
           host: ${{ vars.AWW_HOST }}
           username: ${{ vars.AWW_USERNAME }}
           password: ${{ secrets.AWW_PASSWORD }}
-          source: ".next, public, package.json, yarn.lock, next.config.js"
+          source: "aww-frontend/.next, aww-frontend/public, aww-frontend/package.json, aww-frontend/yarn.lock, aww-frontend/next.config.js"
           target: ".build-staging/"
           strip_components: 0
 
@@ -45,7 +55,7 @@ jobs:
           script: |
             rsync -a --delete ~/.build-staging/aww-frontend/ ~/aww/aww-frontend/
             cd ~/aww/aww-frontend
-            npm ci --omit=dev
+            yarn install --frozen-lockfile
 
   strapi:
     needs: frontend
@@ -58,22 +68,24 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 16
-          cache: "npm"
+          node-version: 18
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare yarn@stable --activate
+
+      - name: Cache Strapi
+        uses: actions/cache@v4
+        with:
+          path: aww-cms/node_modules
+          key: yarn-strapi-${{ hashFiles('aww-cms/yarn.lock') }}
 
       - name: Build Strapi
-        env:
-          HOST: ${{ vars.HOST }}
-          PORT: ${{ vars.PORT }}
         run: |
           cd aww-cms
-          npm i
-          npm run build
-      - name: Check Strapi build
-        run: |
-          ls -la aww-cms
-          ls -la aww-cms/build || echo "❌ build folder NOT FOUND"
-
+          yarn install --frozen-lockfile
+          yarn build
       - name: Create Ecosystem Config File
         env:
           NODE_ENV: production
@@ -100,7 +112,7 @@ jobs:
           host: ${{ vars.AWW_HOST }}
           username: ${{ vars.AWW_USERNAME }}
           password: ${{ secrets.AWW_PASSWORD }}
-          source: "aww-cms/build, aww-cms/package.json, aww-cms/yarn.lock, aww-cms/public, aww-cms/database, aww-cms/config, aww-cms/favicon.ico, ecosystem.config.js"
+          source: "aww-cms/build, aww-cms/package.json, aww-cms/yarn.lock, aww-cms/public, aww-cms/database, aww-cms/config, ecosystem.config.js"
           target: ".build-staging/"
           strip_components: 0
 
@@ -114,7 +126,7 @@ jobs:
             rsync -a --delete ~/.build-staging/ecosystem.config.js ~/aww/ecosystem.config.js
             rsync -a --delete ~/.build-staging/aww-cms/ ~/aww/aww-cms/
             cd ~/aww/aww-cms
-            npm ci --omit=dev
+            yarn install --frozen-lockfile
             cd ~/aww
-            pm2 reload ecosystem.config.js --update-env  --env production
+            pm2 reload ecosystem.config.js --update-env
             pm2 reset all
