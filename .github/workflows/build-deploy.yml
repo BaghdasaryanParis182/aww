@@ -13,13 +13,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 16
+          cache: "yarn"
       - name: Build Next App
         env:
           NEXT_PUBLIC_STRAPI_BASE_URL: ${{ vars.NEXT_PUBLIC_STRAPI_BASE_URL }}
         run: |
           ls
-          npm i
-          npm run build
+          yarn
+          yarn build
 
       - name: Deploy Frontend via SCP
         uses: appleboy/scp-action@v0.1.4
