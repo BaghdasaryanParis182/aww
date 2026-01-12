@@ -14,7 +14,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: 16
 
       - name: Enable Corepack
         run: |
@@ -67,12 +67,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 18
-
-      - name: Enable Corepack
-        run: |
-          corepack enable
-          corepack prepare yarn@stable --activate
+          node-version: 16
+          cache: "npm"
 
       - name: Cache Strapi
         uses: actions/cache@v4
@@ -86,8 +82,8 @@ jobs:
           PORT: ${{ vars.PORT }}
         run: |
           cd aww-cms
-          yarn install
-          yarn build
+          npm i
+          npm run build
       - name: Check Strapi build
         run: |
           ls -la aww-cms
@@ -133,7 +129,7 @@ jobs:
             rsync -a --delete ~/.build-staging/ecosystem.config.js ~/aww/ecosystem.config.js
             rsync -a --delete ~/.build-staging/aww-cms/ ~/aww/aww-cms/
             cd ~/aww/aww-cms
-            yarn install --frozen-lockfile
+            npm ci --omit=dev
             cd ~/aww
             pm2 reload ecosystem.config.js --update-env  --env production
             pm2 reset all

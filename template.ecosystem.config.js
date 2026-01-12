@@ -1,8 +1,8 @@
 module.exports = {
     apps : [{
             name: "aww-cms",
-            script: "yarn",
-            args: "start:prod",
+            script: "npm",
+            args: "run start:prod",
             cwd: './aww-cms/',
             env_production: {
                 NODE_ENV: "production",
