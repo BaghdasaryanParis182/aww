@@ -74,8 +74,7 @@ jobs:
 
       - name: Build Strapi
         env:
-          HOST: ${{ vars.HOST }}
-          PORT: ${{ vars.PORT }}
+          NEXT_PUBLIC_STRAPI_BASE_URL: ${{ vars.NEXT_PUBLIC_STRAPI_BASE_URL }}
         run: |
           cd aww-cms
           yarn install
