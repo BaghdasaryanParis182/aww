@@ -14,14 +14,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: 16
           cache: 'yarn'
           cache-dependency-path: aww-frontend/yarn.lock
 
       - name: Enable Corepack
         run: |
-          corepack enable
-          corepack prepare yarn@4.12.0 --activate
+          sudo npm install -g yarn@1.22.20
 
       - name: Build Next App
         env:
@@ -64,13 +63,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: 16
           cache: 'yarn'
           cache-dependency-path: aww-cms/yarn.lock
       - name: Enable Corepack
         run: |
-          corepack enable
-          corepack prepare yarn@4.12.0 --activate
+          sudo npm install -g yarn@1.22.20
 
       - name: Build Strapi
         env:
