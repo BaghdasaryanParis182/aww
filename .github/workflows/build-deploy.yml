@@ -15,17 +15,13 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 18
+          cache: 'yarn'
+          cache-dependency-path: aww-frontend/yarn.lock
 
       - name: Enable Corepack
         run: |
           corepack enable
-          corepack prepare yarn@stable --activate
-
-      - name: Cache Frontend
-        uses: actions/cache@v4
-        with:
-          path: aww-frontend/node_modules
-          key: yarn-frontend-${{ hashFiles('aww-frontend/yarn.lock') }}
+          corepack prepare yarn@4.12.0 --activate
 
       - name: Build Next App
         env:
@@ -33,7 +29,7 @@ jobs:
         run: |
           cd aww-frontend
           echo "NEXT_PUBLIC_STRAPI_BASE_URL is: $NEXT_PUBLIC_STRAPI_BASE_URL"
-          yarn install --frozen-lockfile
+          yarn install
           yarn build
 
       - name: Deploy Frontend via SCP
@@ -69,22 +65,20 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 18
-
+          cache: 'yarn'
+          cache-dependency-path: aww-cms/yarn.lock
       - name: Enable Corepack
         run: |
           corepack enable
-          corepack prepare yarn@stable --activate
-
-      - name: Cache Strapi
-        uses: actions/cache@v4
-        with:
-          path: aww-cms/node_modules
-          key: yarn-strapi-${{ hashFiles('aww-cms/yarn.lock') }}
+          corepack prepare yarn@4.12.0 --activate
 
       - name: Build Strapi
+        env:
+          HOST: ${{ vars.HOST }}
+          PORT: ${{ vars.PORT }}
         run: |
           cd aww-cms
-          yarn install --frozen-lockfile
+          yarn install
           yarn build
       - name: Create Ecosystem Config File
         env:
@@ -128,5 +122,5 @@ jobs:
             cd ~/aww/aww-cms
             yarn install --frozen-lockfile
             cd ~/aww
-            pm2 reload ecosystem.config.js --update-env
+            pm2 start ecosystem.config.js --env production
             pm2 reset all
