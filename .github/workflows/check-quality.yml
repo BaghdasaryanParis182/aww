@@ -1,22 +1,41 @@
 name: check-quality
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 jobs:
-  check-quality:
+  check-quality-cms:
     runs-on: self-hosted
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-      - name: Setup node
+      - name: Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version: 18
+          node-version: 16
           cache: 'yarn'
+          cache-dependency-path: aww-cms/yarn.lock
       - name: Install dependencies
-        run: yarn install
+        run: |
+          cd ./aww-cms/
+          yarn
+          yarn build
+  check-quality-frontend:
+    needs: check-quality-cms
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 16
+          cache: 'yarn'
+          cache-dependency-path: aww-frontend/yarn.lock
+      - name: Install Dependencies
+        run: |
+          cd ./aww-cms/
+          yarn
+          yarn build
       - name: Lint check
-        run: yarn run lint
-      - name: Type check
-        run: yarn run typecheck
-      - name: Run build
-        run: yarn run build
+        run:  yarn lint

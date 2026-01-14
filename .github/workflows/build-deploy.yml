@@ -8,30 +8,25 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v5
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v6
         with:
           node-version: 16
           cache: 'yarn'
           cache-dependency-path: aww-frontend/yarn.lock
 
-      - name: Enable Corepack
-        run: |
-          sudo npm install -g yarn@1.22.20
-
       - name: Build Next App
         env:
           NEXT_PUBLIC_STRAPI_BASE_URL: ${{ vars.NEXT_PUBLIC_STRAPI_BASE_URL }}
         run: |
           cd aww-frontend
-          echo "NEXT_PUBLIC_STRAPI_BASE_URL is: $NEXT_PUBLIC_STRAPI_BASE_URL"
           yarn install
           yarn build
 
-      - name: Deploy Frontend via SCP
+      - name: Deploy Frontend Via SCP
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ vars.AWW_HOST }}
@@ -41,7 +36,7 @@ jobs:
           target: ".build-staging/"
           strip_components: 0
 
-      - name: Restart Frontend (PM2)
+      - name: Data Preparation
         uses: appleboy/ssh-action@master
         with:
           host: ${{ vars.AWW_HOST }}
@@ -57,18 +52,15 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v5
 
-      - name: Setup Node.js
+      - name: Setup Node
         uses: actions/setup-node@v6
         with:
           node-version: 16
           cache: 'yarn'
           cache-dependency-path: aww-cms/yarn.lock
-      - name: Enable Corepack
-        run: |
-          sudo npm install -g yarn@1.22.20
 
       - name: Build Strapi
         env:
@@ -97,7 +89,7 @@ jobs:
           COURIER_TOKEN: ${{ secrets.COURIER_TOKEN }}
         run: |
           envsubst <  template.ecosystem.config.js > ecosystem.config.js
-      - name: Deploy Strapi via SCP
+      - name: Deploy Strapi Via SCP
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ vars.AWW_HOST }}
@@ -107,7 +99,7 @@ jobs:
           target: ".build-staging/"
           strip_components: 0
 
-      - name: Restart Strapi (PM2)
+      - name: Data Preparation And Run
         uses: appleboy/ssh-action@master
         with:
           host: ${{ vars.AWW_HOST }}
