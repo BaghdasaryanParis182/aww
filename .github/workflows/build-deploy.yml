@@ -2,9 +2,19 @@ name: build-deploy
 
 on:
   workflow_dispatch:
-
+    inputs:
+      deploy_target:
+        description: 'What to deploy'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - frontend
+          - cms
+          - both
 jobs:
   frontend:
+    if: ${{ github.event.inputs.deploy_target == 'frontend' || github.event.inputs.deploy_target == 'both' }}
     runs-on: self-hosted
     steps:
       - name: Checkout Repository
@@ -47,6 +57,7 @@ jobs:
             yarn install --frozen-lockfile
 
   strapi:
+    if: ${{ github.event.inputs.deploy_target == 'cms' || github.event.inputs.deploy_target == 'both' }}
     needs: frontend
     runs-on: self-hosted
 
