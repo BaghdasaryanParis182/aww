@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 16
           cache: 'yarn'
-          cache-dependency-path: ./yarn.lock
+          cache-dependency-path: ./aww-cms/yarn.lock
       - name: Install dependencies
         run: |
           yarn
@@ -38,7 +38,7 @@ jobs:
         with:
           node-version: 16
           cache: 'yarn'
-          cache-dependency-path: ./yarn.lock
+          cache-dependency-path: ./aww-frontend/yarn.lock
       - name: Install Dependencies
         run: |
           yarn
