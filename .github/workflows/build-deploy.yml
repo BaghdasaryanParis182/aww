@@ -24,7 +24,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 16
-          cache: 'yarn'
+          cache: 'npm'
           cache-dependency-path: aww-frontend/yarn.lock
 
       - name: Build Next App
@@ -32,8 +32,8 @@ jobs:
           NEXT_PUBLIC_STRAPI_BASE_URL: ${{ vars.NEXT_PUBLIC_STRAPI_BASE_URL }}
         run: |
           cd aww-frontend
-          yarn install
-          yarn build
+          npm install
+          npm run build
 
       - name: Deploy Frontend Via SCP
         uses: appleboy/scp-action@v0.1.4
@@ -54,7 +54,7 @@ jobs:
           script: |
             rsync -a --delete ~/.build-staging/aww-frontend/ ~/aww/
             cd ~/aww/aww-frontend
-            yarn install --frozen-lockfile
+            npm install --omit=dev
 
   strapi:
     if: ${{ github.event.inputs.deploy_target == 'cms' || github.event.inputs.deploy_target == 'both' }}
@@ -69,7 +69,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 16
-          cache: 'yarn'
+          cache: 'npm'
           cache-dependency-path: aww-cms/yarn.lock
 
       - name: Build Strapi
@@ -77,8 +77,8 @@ jobs:
           NEXT_PUBLIC_STRAPI_BASE_URL: ${{ vars.NEXT_PUBLIC_STRAPI_BASE_URL }}
         run: |
           cd aww-cms
-          yarn install
-          yarn build
+          npm install
+          npm run build
       - name: Create Ecosystem Config File
         env:
           NODE_ENV: production
@@ -119,7 +119,7 @@ jobs:
             rsync -a --delete ~/.build-staging/ecosystem.config.js ~/aww/ecosystem.config.js
             rsync -a --delete ~/.build-staging/aww-cms/ ~/aww/aww-cms/
             cd ~/aww/aww-cms
-            yarn install --frozen-lockfile
+            npm run build:prod
             cd ~/aww
             pm2 start ecosystem.config.js --env production
             pm2 reset all

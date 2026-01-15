@@ -22,7 +22,7 @@ module.exports = {
         },
         {
             name: "aww-frontend",
-            script: "yarn",
+            script: "npm",
             args: "start",
             cwd: './aww-frontend/',
             env_production: {
