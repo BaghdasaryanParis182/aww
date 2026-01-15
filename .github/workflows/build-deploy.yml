@@ -54,8 +54,9 @@ jobs:
           script: |
             rsync -a --delete ~/.build-staging/aww-frontend/ ~/aww/
             cd ~/aww/aww-frontend
-            npm install --omit=dev
-
+            npm install --omit=dev 
+            pm2 reload aww-frontend --update-env
+            pm2 reset aww-frontend
   strapi:
     if: ${{ github.event.inputs.deploy_target == 'cms' || github.event.inputs.deploy_target == 'both' }}
     needs: frontend
@@ -78,7 +79,7 @@ jobs:
         run: |
           cd aww-cms
           npm install
-          npm run build
+          npm run build:prod
       - name: Create Ecosystem Config File
         env:
           NODE_ENV: production
@@ -119,7 +120,7 @@ jobs:
             rsync -a --delete ~/.build-staging/ecosystem.config.js ~/aww/ecosystem.config.js
             rsync -a --delete ~/.build-staging/aww-cms/ ~/aww/aww-cms/
             cd ~/aww/aww-cms
-            npm run build:prod
+            npm install --omit=dev
             cd ~/aww
-            pm2 start ecosystem.config.js --env production
-            pm2 reset all
+            pm2 reload aww-cms --update-env
+            pm2 reset aww-cms
