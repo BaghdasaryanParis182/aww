@@ -57,7 +57,7 @@ jobs:
             cd ~/aww/aww-frontend
             yarn install --frozen-lockfile
             cd ~/aww
-            pm2 reload aww-frontend --update-env --env production
+            pm2 reload aww-frontend --update-env
             pm2 reset aww-frontend
   strapi:
     if: ${{ github.event.inputs.deploy_target == 'cms' || github.event.inputs.deploy_target == 'all' }}
@@ -102,7 +102,7 @@ jobs:
             cd ~/aww/aww-cms
             yarn install --frozen-lockfile
             cd ~/aww
-            pm2 reload aww-cms --update-env --env production
+            pm2 reload aww-cms --update-env
             pm2 reset aww-cms
   ecosystem:
     if: ${{ github.event.inputs.deploy_target == 'ecosystem' || github.event.inputs.deploy_target == 'all' }}
