@@ -53,7 +53,7 @@ jobs:
           username: ${{ vars.AWW_USERNAME }}
           password: ${{ secrets.AWW_PASSWORD }}
           script: |
-            rsync -a --delete ~/.build-staging/aww-frontend/ ~/aww/
+            rsync -a --delete ~/.build-staging/aww-frontend/ ~/aww/aww-frontend/
             cd ~/aww/aww-frontend
             yarn install --frozen-lockfile
             cd ~/aww
