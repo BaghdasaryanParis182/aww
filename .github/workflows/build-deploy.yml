@@ -6,15 +6,16 @@ on:
       deploy_target:
         description: 'What to deploy'
         required: true
-        default: 'both'
+        default: 'all'
         type: choice
         options:
           - frontend
           - cms
-          - both
+          - ecosystem
+          - all
 jobs:
   frontend:
-    if: ${{ github.event.inputs.deploy_target == 'frontend' || github.event.inputs.deploy_target == 'both' }}
+    if: ${{ github.event.inputs.deploy_target == 'frontend' || github.event.inputs.deploy_target == 'all' }}
     runs-on: self-hosted
     steps:
       - name: Checkout Repository
@@ -24,7 +25,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 16
-          cache: 'npm'
+          cache: 'yarn'
           cache-dependency-path: aww-frontend/yarn.lock
 
       - name: Build Next App
@@ -32,8 +33,8 @@ jobs:
           NEXT_PUBLIC_STRAPI_BASE_URL: ${{ vars.NEXT_PUBLIC_STRAPI_BASE_URL }}
         run: |
           cd aww-frontend
-          npm install
-          npm run build
+          yarn
+          yarn build
 
       - name: Deploy Frontend Via SCP
         uses: appleboy/scp-action@v0.1.4
@@ -54,12 +55,11 @@ jobs:
           script: |
             rsync -a --delete ~/.build-staging/aww-frontend/ ~/aww/
             cd ~/aww/aww-frontend
-            npm install --omit=dev 
-            pm2 reload aww-frontend --update-env
+            yarn install --frozen-lockfile
+            pm2 reload aww-frontend --update-env --env production
             pm2 reset aww-frontend
   strapi:
-    if: ${{ github.event.inputs.deploy_target == 'cms' || github.event.inputs.deploy_target == 'both' }}
-    needs: frontend
+    if: ${{ github.event.inputs.deploy_target == 'cms' || github.event.inputs.deploy_target == 'all' }}
     runs-on: self-hosted
 
     steps:
@@ -70,7 +70,7 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 16
-          cache: 'npm'
+          cache: 'yarn'
           cache-dependency-path: aww-cms/yarn.lock
 
       - name: Build Strapi
@@ -78,8 +78,8 @@ jobs:
           NEXT_PUBLIC_STRAPI_BASE_URL: ${{ vars.NEXT_PUBLIC_STRAPI_BASE_URL }}
         run: |
           cd aww-cms
-          npm install
-          npm run build:prod
+          yarn
+          yarn build
       - name: Create Ecosystem Config File
         env:
           NODE_ENV: production
@@ -120,7 +120,54 @@ jobs:
             rsync -a --delete ~/.build-staging/ecosystem.config.js ~/aww/ecosystem.config.js
             rsync -a --delete ~/.build-staging/aww-cms/ ~/aww/aww-cms/
             cd ~/aww/aww-cms
-            npm install --omit=dev
+            yarn install --frozen-lockfile
             cd ~/aww
-            pm2 reload aww-cms --update-env
+            pm2 reload aww-cms --update-env --env production
             pm2 reset aww-cms
+  ecosystem:
+    if: ${{ github.event.inputs.deploy_target == 'ecosystem' || github.event.inputs.deploy_target == 'all' }}
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Create Ecosystem Config File
+        env:
+          NODE_ENV: production
+          HOST: ${{ vars.HOST }}
+          PORT: ${{ vars.PORT }}
+          APP_KEYS: ${{ secrets.APP_KEYS }}
+          API_TOKEN_SALT: ${{ secrets.API_TOKEN_SALT }}
+          ADMIN_JWT_SECRET: ${{ secrets.ADMIN_JWT_SECRET }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          DATABASE_HOST: ${{ vars.DATABASE_HOST }}
+          DATABASE_PORT: ${{ vars.DATABASE_PORT }}
+          DATABASE_NAME: ${{ vars.DATABASE_NAME }}
+          DATABASE_USERNAME: ${{ vars.DATABASE_USERNAME }}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          DATABASE_SCHEMA: ${{ vars.DATABASE_SCHEMA }}
+          NEXT_PORT: ${{ vars.NEXT_PORT }}
+          STRAPI_ADMIN_BACKEND_URL: ${{ vars.STRAPI_ADMIN_BACKEND_URL }}
+          COURIER_TOKEN: ${{ secrets.COURIER_TOKEN }}
+        run: |
+          envsubst <  template.ecosystem.config.js > ecosystem.config.js
+      - name: Deploy Strapi Via SCP
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ vars.AWW_HOST }}
+          username: ${{ vars.AWW_USERNAME }}
+          password: ${{ secrets.AWW_PASSWORD }}
+          source: "ecosystem.config.js"
+          target: ".build-staging/"
+          strip_components: 0
+
+      - name: Data Preparation And Run
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ vars.AWW_HOST }}
+          username: ${{ vars.AWW_USERNAME }}
+          password: ${{ secrets.AWW_PASSWORD }}
+          script: |
+            rsync -a --delete ~/.build-staging/ecosystem.config.js ~/aww/
+            cd ~/aww
+            pm2 reload ecosystem.config.js --update-env --env production
