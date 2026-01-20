@@ -11,18 +11,18 @@ jobs:
         shell: bash
         working-directory: ./aww-cms
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v5
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
           node-version: 16
-          cache: 'npm'
+          cache: 'yarn'
           cache-dependency-path: ./aww-cms/yarn.lock
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
-          npm install
-          npm run build
+          yarn
+          yarn build
   check-quality-frontend:
     needs: check-quality-cms
     runs-on: self-hosted
@@ -31,7 +31,7 @@ jobs:
         shell: bash
         working-directory: ./aww-frontend
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v5
       - name: Setup Node
         uses: actions/setup-node@v6
@@ -41,7 +41,7 @@ jobs:
           cache-dependency-path: ./aww-frontend/yarn.lock
       - name: Install Dependencies
         run: |
-          npm install
-          npm run build
-      - name: Lint check
-        run:  npm run lint
+          yarn
+          yarn build
+      - name: Lint Check
+        run:  yarn lint
